@@ -1,14 +1,17 @@
 backplane:
   redisUri: "redis://<HOSTNAME>:6379"
-  redisPassword: "<PASSWORD>" # This can be substituted using ot_worker_launch.sh
+  redisPassword: "<PASSWORD>"
   queues:
+    - name: "fpga"
+      allowUnmatched: true
+      properties:
+        - name: "cw310"
+          value: "1"
     - name: "rest"
       allowUnmatched: true
       properties:
         - name: "min-cores"
           value: "*"
-        - name: "max-cores"
+        - name: "max_cores"
           value: "*"
-worker:
-  port: 8981
-  publicName: "localhost:8981"
+

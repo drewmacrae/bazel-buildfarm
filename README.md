@@ -4,7 +4,7 @@
 |--|--|--|
 | ![Build status](https://badge.buildkite.com/45f4fd4c0cfb95f7705156a4119641c6d5d6c310452d6e65a4.svg?branch=main) |![Build status](https://badge.buildkite.com/d0c1471a98dd7d7123e6c21b57add0e8c2c0552042ea18f02c.svg)|![Build status](https://badge.buildkite.com/e0ac44ec0a8c3473d3d9490600366f1a73e8fa171d4913e9e3.svg)|
 
-This repository hosts the [Bazel](https://bazel.build) remote caching and execution system.
+This repository hosts a short fork of Buildfarm, a [Bazel](https://bazel.build) remote caching and execution system.
 
 Background information on the status of caching and remote execution in bazel can be
 found in the [bazel documentation](https://docs.bazel.build/versions/master/remote-caching.html).
@@ -15,11 +15,19 @@ File issues here for bugs or feature requests, and ask questions via build team 
 
 ## Usage
 
-All commandline options override corresponding config settings.
+You'll need to start Redis, to cache results of actions, launch a Buildfarm
+Server to listen for and queue remote execution requests, and launch two
+Buildfarm Workers to serve both FPGA and non-FPGA workloads.
 
 ### Redis
 
-Run via
+Use the convenience script:
+
+```
+PASSWORD=secure_password ./ot_setup.sh
+```
+
+Or run via
 
 ```
 docker run -d --rm --name buildfarm-redis -p 6379:6379 redis:5.0.9
@@ -28,7 +36,13 @@ redis-cli config set stop-writes-on-bgsave-error no
 
 ### Bazel Buildfarm Server
 
-Run via
+Use the convenience script:
+
+```
+PASSWORD=secure_password REDIS_HOST=localhost ./ot_server_launch.sh
+```
+
+Or run via
 
 ```
 bazelisk run //src/main/java/build/buildfarm:buildfarm-server -- <logfile> <configfile>
@@ -40,7 +54,14 @@ Ex: bazelisk run //src/main/java/build/buildfarm:buildfarm-server -- --jvm_flag=
 
 ### Bazel Buildfarm Worker
 
-Run via
+Use the convenience script to launch an FPGA and a non-FPGA worker to service
+OpenTitan remote builds
+
+```
+PASSWORD=secure_password REDIS_HOST=localhost ./ot_worker_launch.sh
+```
+
+Or run via
 
 ```
 bazelisk run //src/main/java/build/buildfarm:buildfarm-shard-worker -- <logfile> <configfile>

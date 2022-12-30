@@ -1,0 +1,13 @@
+backplane:
+  redisUri: "redis://<HOSTNAME>:6379"
+  redisPassword: "<PASSWORD>" # This can be substituted using ot_worker_launch.
+  queues:
+    - name: "fpga"
+      allowUnmatched: true
+      properties:
+        - name: "cw310" # To run in this queue tests should have exec_properties set
+          value: "1" # as in https://github.com/lowRISC/opentitan/pull/16949
+worker:
+  port: 8982
+  publicName: "localhost:8982"
+  executeStageWidth: 1 # This effectively makes FPGA tests run exclusively
